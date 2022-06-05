@@ -1,6 +1,7 @@
 use pyo3::prelude::*;
 use reqwest::blocking;
 use serde::{Deserialize, Serialize};
+use math;
 
 #[pyclass]
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -54,14 +55,14 @@ fn send_request(location: String, api_key: String) -> PyResult<Master> {
     Ok(weather)
 }
 fn convert_temps(weather: &mut Master) {
-    weather.temp.temp_max = kelvin_to_celcius(weather.temp.temp_max);
-    weather.temp.temp_min = kelvin_to_celcius(weather.temp.temp_min);
-    weather.temp.temp = kelvin_to_celcius(weather.temp.temp);
-    weather.temp.feels_like = kelvin_to_celcius(weather.temp.feels_like)
+    weather.temp.temp_max = math::round::ceil(kelvin_to_celcius(weather.temp.temp_max), 2) as f32;
+    weather.temp.temp_min = math::round::ceil(kelvin_to_celcius(weather.temp.temp_min), 2) as f32;
+    weather.temp.temp = math::round::ceil(kelvin_to_celcius(weather.temp.temp), 2) as f32;
+    weather.temp.feels_like = math::round::ceil(kelvin_to_celcius(weather.temp.feels_like), 2) as f32
 }
 
-fn kelvin_to_celcius(temp: f32) -> f32 {
-    temp - 273.15
+fn kelvin_to_celcius(temp: f32) -> f64 {
+    (temp - 273.15) as f64
 }
 
 /// A Python module implemented in Rust.

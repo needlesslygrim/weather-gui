@@ -13,7 +13,7 @@ class MainWindow(Gtk.ApplicationWindow):
 		super().__init__(*args, **kwargs)
 
 		self.set_default_size(600, 250)
-		self.set_title("MyApp")
+		self.set_title("Veður")
 
 		# Main layout containers
 		self.box1 = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
@@ -24,16 +24,24 @@ class MainWindow(Gtk.ApplicationWindow):
 		self.box1.set_margin_bottom(10)
 		self.box1.set_margin_start(10)
 		self.box1.set_margin_end(10)
+		self.box2.set_spacing(10)
+		self.box2.set_margin_top(10)
+		self.box2.set_margin_bottom(10)
+		self.box2.set_margin_start(10)
+		self.box2.set_margin_end(10)
+		self.box3.set_spacing(10)
+		self.box3.set_margin_top(10)
+		self.box3.set_margin_bottom(10)
+		self.box3.set_margin_start(10)
+		self.box3.set_margin_end(10)
 		self.set_child(self.box1)  # Horizontal box to window
 		self.box1.append(self.box2)  # Put vert box in that box
 		self.box1.append(self.box3)  # And another one, empty for now
 		self.set_child(self.box1)  # Horizontal box to window
 
 		self.location_entry = Gtk.Entry()
-		self.api_key_entry = Gtk.Entry()
 		self.box2.append(self.location_entry)
 
-		self.box2.append(self.api_key_entry)
 		self.temp = Gtk.Label()
 		self.feels_like = Gtk.Label()
 		self.temp_max = Gtk.Label()
@@ -42,6 +50,10 @@ class MainWindow(Gtk.ApplicationWindow):
 		self.description = Gtk.Label()
 		self.box3.append(self.temp)
 		self.box3.append(self.feels_like)
+		self.box3.append(self.temp_max)
+		self.box3.append(self.temp_min)
+		self.box3.append(self.main)
+		self.box3.append(self.description)
 
 		# Add a button
 		self.button = Gtk.Button(label="Get the weather!")
@@ -102,8 +114,15 @@ class MainWindow(Gtk.ApplicationWindow):
 		self.about.show()
 
 	def get_weather(self, action):
-		weather = weather_cli.send_request(self.location_entry.get_text(), self.api_key_entry.get_text())
-		self.temp.set_text(f"The temperature is {weather.temp.temp}")
+		weather = weather_cli.send_request(self.location_entry.get_text(), "e391a6cfbcd81421bbc316f0eb5ab74c")
+		self.main.set_text(f"The weather is currently: {weather.weather[0].main}")
+		self.description.set_text(f"The weather is more specifically, : {weather.weather[0].description}")
+		self.temp.set_text(f"The temperature is: {weather.temp.temp}")
+		self.feels_like.set_text(f"The temperature feels like: {weather.temp.feels_like}")
+		self.temp_max.set_text(f"The maximum temperature today will be: {weather.temp.temp_max}")
+		self.temp_min.set_text(f"The minimum temperature today will be: {weather.temp.temp_min}")
+
+
 class MyApp(Adw.Application):
 	def __init__(self, **kwargs):
 		super().__init__(**kwargs)

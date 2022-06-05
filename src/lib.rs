@@ -53,13 +53,13 @@ fn send_request(location: String, api_key: String) -> PyResult<Master> {
 }
 
 fn format_temps(weather: &mut Master) {
-    weather.temp.temp_max = round_temp(kelvin_to_celcius(weather.temp.temp_max));
-    weather.temp.temp_min = round_temp(kelvin_to_celcius(weather.temp.temp_min));
-    weather.temp.temp = round_temp(kelvin_to_celcius(weather.temp.temp));
-    weather.temp.feels_like = round_temp(kelvin_to_celcius(weather.temp.feels_like));
+    weather.temp.temp_max = round_temp(kelvin_to_celsius(weather.temp.temp_max));
+    weather.temp.temp_min = round_temp(kelvin_to_celsius(weather.temp.temp_min));
+    weather.temp.temp = round_temp(kelvin_to_celsius(weather.temp.temp));
+    weather.temp.feels_like = round_temp(kelvin_to_celsius(weather.temp.feels_like));
 }
 
-fn kelvin_to_celcius(temp: f32) -> f64 {
+fn kelvin_to_celsius(temp: f32) -> f64 {
     (temp - 273.15) as f64
 }
 

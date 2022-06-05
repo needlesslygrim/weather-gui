@@ -8,7 +8,7 @@ jobs:
   linux:
     runs-on: ubuntu-latest
     steps:
-    - run: sudo -s apt install openssl libssl-dev rust-openssl-sys
+    - run: sudo -s apt install pkg-config  openssl libssl-dev rust-openssl-sys
     - uses: actions/checkout@v2
     - uses: messense/maturin-action@v1
       with:

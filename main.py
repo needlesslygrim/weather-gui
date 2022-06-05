@@ -17,23 +17,35 @@ class MainWindow(Gtk.ApplicationWindow):
 
 		# Main layout containers
 		self.box1 = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+		self.box2 = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+		self.box3 = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
 		self.box1.set_spacing(10)
 		self.box1.set_margin_top(10)
 		self.box1.set_margin_bottom(10)
 		self.box1.set_margin_start(10)
 		self.box1.set_margin_end(10)
 		self.set_child(self.box1)  # Horizontal box to window
+		self.box1.append(self.box2)  # Put vert box in that box
+		self.box1.append(self.box3)  # And another one, empty for now
+		self.set_child(self.box1)  # Horizontal box to window
 
 		self.location_entry = Gtk.Entry()
 		self.api_key_entry = Gtk.Entry()
-		self.box1.append(self.location_entry)
+		self.box2.append(self.location_entry)
 
-		self.box1.append(self.api_key_entry)
+		self.box2.append(self.api_key_entry)
 		self.temp = Gtk.Label()
-		self.box1.append(self.temp)
+		self.feels_like = Gtk.Label()
+		self.temp_max = Gtk.Label()
+		self.temp_min = Gtk.Label()
+		self.main = Gtk.Label()
+		self.description = Gtk.Label()
+		self.box3.append(self.temp)
+		self.box3.append(self.feels_like)
+
 		# Add a button
 		self.button = Gtk.Button(label="Get the weather!")
-		self.box1.append(
+		self.box2.append(
 			self.button
 		)  # But button in the first of the two vertical boxes
 		self.button.connect('clicked', self.get_weather)

@@ -1,6 +1,6 @@
+use math;
 use pyo3::prelude::*;
 use serde::{Deserialize, Serialize};
-use math;
 
 #[pyclass]
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -55,7 +55,8 @@ fn convert_temps(weather: &mut Master) {
     weather.temp.temp_max = math::round::ceil(kelvin_to_celcius(weather.temp.temp_max), 2) as f32;
     weather.temp.temp_min = math::round::ceil(kelvin_to_celcius(weather.temp.temp_min), 2) as f32;
     weather.temp.temp = math::round::ceil(kelvin_to_celcius(weather.temp.temp), 2) as f32;
-    weather.temp.feels_like = math::round::ceil(kelvin_to_celcius(weather.temp.feels_like), 2) as f32
+    weather.temp.feels_like =
+        math::round::ceil(kelvin_to_celcius(weather.temp.feels_like), 2) as f32
 }
 
 fn kelvin_to_celcius(temp: f32) -> f64 {

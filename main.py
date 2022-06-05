@@ -114,7 +114,7 @@ class MainWindow(Gtk.ApplicationWindow):
         self.about.show()
 
     def get_weather(self, action):
-        weather = weather_cli.send_request(
+        weather = weather.send_request(
             self.location_entry.get_text(), "e391a6cfbcd81421bbc316f0eb5ab74c"
         )
         self.main.set_text(f"The weather is currently: {weather.weather[0].main}")

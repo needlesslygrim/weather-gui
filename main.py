@@ -133,7 +133,7 @@ class MainWindow(Gtk.ApplicationWindow):
         )
 
 
-class MyApp(Adw.Application):
+class Weather(Adw.Application):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.connect("activate", self.on_activate)
@@ -144,5 +144,5 @@ class MyApp(Adw.Application):
 
 
 if __name__ == "__main__":
-    app = MyApp(application_id="com.github.ErickHoward.weather")
+    app = Weather(application_id="com.github.ErickHoward.weather")
     app.run(sys.argv)

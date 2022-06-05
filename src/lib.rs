@@ -48,11 +48,11 @@ fn send_request(location: String, api_key: String) -> PyResult<Master> {
     ))
     .unwrap();
     let mut weather = response.json::<Master>().unwrap();
-    convert_temps(&mut weather);
+    format_temps(&mut weather);
     Ok(weather)
 }
 
-fn convert_temps(weather: &mut Master) {
+fn format_temps(weather: &mut Master) {
     weather.temp.temp_max = round_temp(kelvin_to_celcius(weather.temp.temp_max));
     weather.temp.temp_min = round_temp(kelvin_to_celcius(weather.temp.temp_min));
     weather.temp.temp = round_temp(kelvin_to_celcius(weather.temp.temp));

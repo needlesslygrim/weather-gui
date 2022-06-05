@@ -1,4 +1,4 @@
-import weather_cli
+import weather
 
 import sys
 import gi

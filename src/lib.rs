@@ -1,5 +1,4 @@
 use pyo3::prelude::*;
-use reqwest::blocking;
 use serde::{Deserialize, Serialize};
 
 #[pyclass]
@@ -48,9 +47,7 @@ fn send_request(location: String, api_key: String) -> PyResult<Master> {
     ))
     .unwrap();
     let mut weather = response.json::<Master>().unwrap();
-    println!("{:#?}", weather);
     convert_temps(&mut weather);
-    println!("{:#?}", weather);
     Ok(weather)
 }
 fn convert_temps(weather: &mut Master) {

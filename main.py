@@ -114,23 +114,31 @@ class MainWindow(Gtk.ApplicationWindow):
         self.about.show()
 
     def get_weather(self, action):
-        master = weather.send_request(
-            self.location_entry.get_text(), "e391a6cfbcd81421bbc316f0eb5ab74c"
-        )
-        self.main.set_text(f"The weather is currently: {master.weather[0].main}")
-        self.description.set_text(
-            f"The master is more specifically : {master.weather[0].description}"
-        )
-        self.temp.set_text(f"The temperature is: {master.temp.temp}")
-        self.feels_like.set_text(
-            f"The temperature feels like: {master.temp.feels_like}"
-        )
-        self.temp_max.set_text(
-            f"The maximum temperature today will be: {master.temp.temp_max}"
-        )
-        self.temp_min.set_text(
-            f"The minimum temperature today will be: {master.temp.temp_min}"
-        )
+        try:
+            master = weather.send_request(
+            self.location_entry.get_text(), "e391a6cfbcd81421bbc316f0eb5ab74c")
+            self.main.set_text(f"The weather is currently: {master.name}")
+            self.description.set_text(
+                f"The master is more specifically: {master.description.title()}"
+            )
+            self.temp.set_text(f"The temperature is: {master.temp}")
+            self.feels_like.set_text(
+                f"The temperature feels like: {master.feels_like}"
+            )
+            self.temp_max.set_text(
+                f"The maximum temperature today will be: {master.temp_max}"
+            )
+            self.temp_min.set_text(
+                f"The minimum temperature today will be: {master.temp_min}"
+            )
+        except ConnectionError:
+            self.main.set_text("Couldn't connect to the server.")
+        except TypeError:
+            self.main.set_text("Couldn't understand the response, try checking your input")
+
+
+
+
 
 
 class Weather(Adw.Application):

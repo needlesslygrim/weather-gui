@@ -1,62 +1,112 @@
 use math;
+use pyo3::exceptions;
 use pyo3::prelude::*;
+use reqwest::{Error, Response};
 use serde::{Deserialize, Serialize};
 
-#[pyclass]
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
-pub struct Master {
-    #[pyo3(get)]
+pub struct JSON_Master {
     #[serde(rename(deserialize = "weather"))]
-    pub weather: Vec<Weather>,
-    #[pyo3(get)]
+    pub weather: Vec<JSON_Weather>,
+
     #[serde(rename(deserialize = "main"))]
-    pub temp: Temp,
+    pub temp: JSON_Temps,
 }
-#[pyclass]
+
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
-pub struct Weather {
-    #[pyo3(get)]
+pub struct JSON_Weather {
     pub main: String,
-    #[pyo3(get)]
+
     pub description: String,
 }
 
-#[pyclass]
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
-pub struct Temp {
-    #[pyo3(get)]
+pub struct JSON_Temps {
     pub temp: f32,
-    #[pyo3(get)]
+
     #[serde(rename = "feels_like")]
     pub feels_like: f32,
-    #[pyo3(get)]
+
     #[serde(rename = "temp_min")]
     pub temp_min: f32,
-    #[pyo3(get)]
+
     #[serde(rename = "temp_max")]
     pub temp_max: f32,
 }
 
+#[pyclass]
+pub struct Weather {
+    #[pyo3(get)]
+    pub name: String,
+    #[pyo3(get)]
+    pub description: String,
+    #[pyo3(get)]
+    pub temp: f32,
+    #[pyo3(get)]
+    pub temp_max: f32,
+    #[pyo3(get)]
+    pub temp_min: f32,
+    #[pyo3(get)]
+    pub feels_like: f32,
+}
+#[pymethods]
+impl Weather {
+    #[new]
+    fn new(
+        name: &str,
+        description: &str,
+        temp: f32,
+        temp_max: f32,
+        temp_min: f32,
+        feels_like: f32,
+    ) -> Weather {
+        Weather {
+            name: name.to_string(),
+            description: description.to_string(),
+            temp,
+            temp_max,
+            temp_min,
+            feels_like,
+        }
+    }
+}
+
 #[pyfunction]
-fn send_request(location: String, api_key: String) -> PyResult<Master> {
-    let response = reqwest::blocking::get(format!(
+fn send_request(location: String, api_key: String) -> PyResult<Weather> {
+    let mut response = match reqwest::blocking::get(format!(
         "https://api.openweathermap.org/data/2.5/weather?q={}&APPID={}",
         location, api_key
-    ))
-    .unwrap();
-    let mut weather = response.json::<Master>().unwrap();
+    )) {
+        Ok(response) => response,
+        Err(_) => {
+            return Err(exceptions::PyConnectionError::new_err(
+                "Couldn't connect to the remote server.",
+            ))
+        }
+    };
+
+    let weather = match response.json::<JSON_Master>() {
+        Ok(weather) => weather,
+        Err(e) => {
+            return Err(exceptions::PyTypeError::new_err(
+                "Couldn't read the response.",
+            ))
+        }
+    };
+
+    let mut weather : Weather = Weather::new( &weather.weather[0].main.as_str(), weather.weather[0].description.as_str() , weather.temp.temp, weather.temp.temp_max, weather.temp.temp_min, weather.temp.feels_like);
     format_temps(&mut weather);
     Ok(weather)
 }
 
-fn format_temps(weather: &mut Master) {
-    weather.temp.temp_max = round_temp(kelvin_to_celsius(weather.temp.temp_max));
-    weather.temp.temp_min = round_temp(kelvin_to_celsius(weather.temp.temp_min));
-    weather.temp.temp = round_temp(kelvin_to_celsius(weather.temp.temp));
-    weather.temp.feels_like = round_temp(kelvin_to_celsius(weather.temp.feels_like));
+fn format_temps(weather: &mut Weather) {
+    weather.temp_max = round_temp(kelvin_to_celsius(weather.temp_max));
+    weather.temp_min = round_temp(kelvin_to_celsius(weather.temp_min));
+    weather.temp = round_temp(kelvin_to_celsius(weather.temp));
+    weather.feels_like = round_temp(kelvin_to_celsius(weather.feels_like));
 }
 
 fn kelvin_to_celsius(temp: f32) -> f64 {
@@ -71,8 +121,6 @@ fn round_temp(temp: f64) -> f32 {
 #[pymodule]
 fn weather(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(send_request, m)?)?;
-    m.add_class::<Master>()?;
     m.add_class::<Weather>()?;
-    m.add_class::<Temp>()?;
     Ok(())
 }

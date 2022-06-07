@@ -8,6 +8,9 @@ gi.require_version("Adw", "1")
 from gi.repository import Gtk, Adw, Gio, Gdk, Graphene, GLib
 
 
+def round_temp(num: float) -> float:
+    return round(num, 2)
+
 class MainWindow(Gtk.ApplicationWindow):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -119,25 +122,22 @@ class MainWindow(Gtk.ApplicationWindow):
             self.location_entry.get_text(), "e391a6cfbcd81421bbc316f0eb5ab74c")
             self.main.set_text(f"The weather is currently: {master.name}")
             self.description.set_text(
-                f"The master is more specifically: {master.description.title()}"
+                f"The weather is more specifically: {master.description.title()}"
             )
-            self.temp.set_text(f"The temperature is: {master.temp}")
+            self.temp.set_text(f"The temperature is: {round_temp(master.temp)}")
             self.feels_like.set_text(
-                f"The temperature feels like: {master.feels_like}"
+                f"The temperature feels like: {round_temp(master.feels_like)}"
             )
             self.temp_max.set_text(
-                f"The maximum temperature today will be: {master.temp_max}"
+                f"The maximum temperature today will be: {round_temp(master.temp_max)}"
             )
             self.temp_min.set_text(
-                f"The minimum temperature today will be: {master.temp_min}"
+                f"The minimum temperature today will be: {round_temp(master.temp_min)}"
             )
         except ConnectionError:
             self.main.set_text("Couldn't connect to the server.")
         except TypeError:
             self.main.set_text("Couldn't understand the response, try checking your input")
-
-
-
 
 
 
